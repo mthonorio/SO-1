@@ -27,3 +27,5 @@ A entrada é composta por uma série de pares de números inteiros separados por
 A saída é composta por linhas contendo a sigla de cada um dos três algoritmos e os valores das três métricas solicitadas.
 
 Cada linha apresenta a sigla do algoritmo e os valores médios (com uma casa decimal) para tempo de retorno, tempo de resposta e tempo de espera, exatamente nesta ordem, separados por um espaço em branco.
+
+## Requisitos

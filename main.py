@@ -1,46 +1,19 @@
 import sys
-from encode import encode_file
-from decode import decode_file
-import base64
+from rr import rr_schedule
 
-# main.py -enc/-dec -k=9 -i=input.txt
-
-def parse_args(args):
-    error = None
-    output = {}
-    try:
-        # operação a ser realizada (encode ou decode)
-        op = [opArg for opArg in argV if opArg == '-enc' or opArg == '-dec'][0]
-        output['op'] = op
-
-        try:
-            # arquivo de input
-            input_file = [inputFile for inputFile in argV if inputFile.startswith('-i=')][0][3:]
-            output['input_file'] = input_file
-
-            if op == '-enc':
-                try:
-                    # valor de K
-                    K = int([kArg for kArg in argV if kArg.startswith('-k=')][0][3:])
-                    if not (9 <= K <= 16):
-                        error = 'K value must be between 9 and 16 (included).'
-                        return [error, output]
-                    else:
-                        output['K'] = K
-                        return [error, output]
-                except:
-                    error = 'This script requires a value to be specified with the -k= flag for enconding.'
-                    return [error, output]
-            else:
-                return [error, output]
-        except:
-            error = 'Input file not found.'
-            return [error, output]
-
-    except:
-        error = 'This script requires an operation to be specified. Use -enc or -dec'
-        return [error, output]
-
+def parse_args(argV):
+    if len(argV) < 1:
+        return 'Not enough arguments', None
+    if argV[0] == '-rr':
+        if len(argV) > 4:
+            return 'Not enough arguments', None
+        if not argV[1].isdigit():
+            return 'Q must be a number', None
+        return None, {'op': argV[0], 'Q': int(argV[1]), 'input_file': argV[2]}
+    else:
+        if len(argV) < 1:
+            return 'Not enough arguments', None
+        return None, {'op': argV[0], 'input_file': argV[1]}
 
 if __name__ == '__main__':
     argV = sys.argv[1:]
@@ -50,7 +23,7 @@ if __name__ == '__main__':
         print(f'[ERROR]: {error}')
         exit()
     else:
-        if (args['op'] == '-enc'):
-            encode_file(args['K'], args['input_file'])
+        if (args['op'] == '-rr'):
+            rr_schedule(args['Q'], args['input_file'])
         else:
-            decode_file(args['input_file'])
+            print('Not implemented yet')

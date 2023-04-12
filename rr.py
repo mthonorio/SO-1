@@ -6,16 +6,23 @@ import operator
 def open_file(fileName):
     try:
         with open(f'./tests/{fileName}', 'r') as f:
-            data = f.read()
-            return data
+            lines=f.readlines()
+            result = [
+                [
+                    int(processes.strip()) for processes in line.split(' ')
+                ]
+                for line in lines[0:]
+            ]
+
+            return result
     except:
         print('[Error]: File not found')
         exit()
 
 def write_file(media_data, fileName):
-    with open(f'./outputs/{fileName}.txt', 'w') as output:
-        for data in compressed_data:
-            output.write(struct.pack('>H', data))
+    with open(f'./outputs/{fileName}', 'w') as output:
+        for data in media_data:
+            output.write(str(data))
 
 # def quickSort(list, compare_fn):
 #   if not list:
@@ -28,17 +35,18 @@ def write_file(media_data, fileName):
 
 def rr_schedule(quantum, file):
 
-    data = open_file(file)
+    data = open_file(file) 
     data.sort(key=operator.itemgetter(0))
     print(data)
 
+    n = len(data) # Number of processes
     queue = [] # Initialize an empty queue
     current_time = 0 # Initialize the current time to 0
     completed_processes = [] # Initialize an empty list to keep track of completed processes
 
     begin_time = timeit.default_timer()
     while len(completed_processes) < n: # Loop until all processes have completed execution
-        for i, process in enumerate(processes):
+        for i, process in enumerate(data):
             # Check if a process has arrived and add it to the queue
             if process[0] <= current_time and i not in [p[0] for p in queue] and i not in [p[0] for p in completed_processes]:
                 queue.append((i, process[0]))
@@ -67,8 +75,8 @@ def rr_schedule(quantum, file):
     # Create a list of tuples representing the order in which the processes were executed
     execution_order = [(process_idx, completion_time) for process_idx, completion_time in completed_processes]
 
-    print(f'Compression time: {end_time - begin_time} seconds')
-    write_file(compressed_data, file)
+    print(f'RR algorithm time: {end_time - begin_time} seconds')
+    write_file(execution_order, file)
     return execution_order
 
 def round_robin(processes, quantum):
@@ -84,7 +92,7 @@ def round_robin(processes, quantum):
     A list of tuples representing the order in which the processes were executed. Each tuple should have two elements:
     the index of the process in the original list (int) and the time at which it completed execution (int).
     """
-    n = len(processes)
+    
     
 
     
