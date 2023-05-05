@@ -1,7 +1,6 @@
 import operator
 from fcfs import Process
 from in_out import open_file, write_file
-from Process import Process
 
 
 def sjf_scheduling(file):
@@ -15,16 +14,12 @@ def sjf_scheduling(file):
     n = len(processes)
     start_times = []
     exit_times = []
-    completion_times = [0] * n
-    waiting_times = [0] * n
     turnaround_times = [0] * n
     current_time = 0
 
     for process in sorted_processes:
         # Add the 0 in the end element of the process
         process.append(0)
-
-    print(sorted_processes)
 
     for i in range(n):
         ready_queue = []
@@ -80,7 +75,6 @@ def sjf_scheduling(file):
 
     avg_waiting_time = round(total_waiting_time / n, 1)
 
-    print(sorted_processes)
     # Print the average waiting time and average turnaround time and average return time
     print(f'Average turnaround time: {avg_waiting_time}')
     print(f'Average return time: {avg_turnaround_time}')
