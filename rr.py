@@ -1,40 +1,10 @@
 import struct
 import timeit
-from tqdm import tqdm
 import operator
+from in_out import open_file, write_file
 
-def open_file(fileName):
-    try:
-        with open(f'./tests/{fileName}', 'r') as f:
-            lines=f.readlines()
-            result = [
-                [
-                    int(processes.strip()) for processes in line.split(' ')
-                ]
-                for line in lines[0:]
-            ]
-
-            return result
-    except:
-        print('[Error]: File not found')
-        exit()
-
-def write_file(media_data, fileName):
-    with open(f'./outputs/{fileName}', 'w') as output:
-        for data in media_data:
-            output.write(str(data))
-
-# def quickSort(list, compare_fn):
-#   if not list:
-#       return list
-#   pivot = list[0]
-#   lesser = quickSort([x for x in list[1:] if compare_fn(x, pivot)], compare_fn)
-#   greater = quickSort([x for x in list[1:] if not compare_fn(x, pivot)], compare_fn)
-#   return lesser + [pivot] + greater
-# print(quickSort(product_list, lambda x,y: x[0] < y[0]))
-
-def rr_schedule(quantum, file):
-
+def rr_scheduling(quantum, file):
+    # Read the file and sort the processes by arrival time
     data = open_file(file) 
     data.sort(key=operator.itemgetter(0))
     print(data)
@@ -77,22 +47,36 @@ def rr_schedule(quantum, file):
 
     print(f'RR algorithm time: {end_time - begin_time} seconds')
     write_file(execution_order, file)
+
+    print("Gantt Chart:")
+    print("-----------")
+
+    # Print header row
+    for p in execution_order:
+        print(f"| P{p} ", end="")
+    print("|")
+
+    # Print separator
+    print("+", end="")
+    for i in range(len(execution_order)):
+        print("----+", end="")
+    print("")
+
+    # Print timeline
+    current_time = 0
+    for i, p in enumerate(execution_order):
+        # Print time interval
+        if i == 0:
+            print(f"0    {current_time + 1}    ", end="")
+        else:
+            print(f"{current_time}    {current_time + 1}    ", end="")
+        
+        # Print process ID
+        if i == len(execution_order) - 1:
+            print(f"P{p} |")
+        else:
+            print(f"P{p} ", end="")
+        
+        # Update current time
+        current_time += 1
     return execution_order
-
-def round_robin(processes, quantum):
-    """
-    Simulates the Round Robin scheduling algorithm for CPU scheduling.
-
-    Args:
-    processes (list): A list of dictionaries representing the processes to be scheduled. Each dictionary should
-                      have the following keys: 'arrival_time' (int), 'burst_time' (int).
-    quantum (int): The time quantum for the Round Robin algorithm.
-
-    Returns:
-    A list of tuples representing the order in which the processes were executed. Each tuple should have two elements:
-    the index of the process in the original list (int) and the time at which it completed execution (int).
-    """
-    
-    
-
-    

@@ -29,3 +29,17 @@ A saída é composta por linhas contendo a sigla de cada um dos três algoritmos
 Cada linha apresenta a sigla do algoritmo e os valores médios (com uma casa decimal) para tempo de retorno, tempo de resposta e tempo de espera, exatamente nesta ordem, separados por um espaço em branco.
 
 ## Requisitos
+
+## Execução
+
+Para rodar o programa é necessário passar os argumentos:
+
+- Operação
+- Número do Quantum
+- Arquivo de teste para a execução
+
+Como exemplo:
+
+```
+python main.py -rr 2 unorganized.txt
+```
