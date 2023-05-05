@@ -35,7 +35,7 @@ Cada linha apresenta a sigla do algoritmo e os valores médios (com uma casa dec
 Para rodar o programa é necessário passar os argumentos:
 
 - Operação
-- Número do Quantum
+- Número do Quantum para o RR
 - Arquivo de teste para a execução
 
 Como exemplo:

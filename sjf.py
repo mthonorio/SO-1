@@ -1,5 +1,4 @@
 import operator
-from fcfs import Process
 from in_out import open_file, write_file
 
 
