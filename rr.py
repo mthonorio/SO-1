@@ -115,5 +115,4 @@ def rr_scheduling(quantum, file):
     avg_waiting_time = round(total_waiting_time / n, 1)
 
     # Print the output
-    print('Average turnaround time: ', avg_turnaround_time)
-    print('Average waiting time: ', avg_waiting_time)
+    print(f'RR {avg_turnaround_time} {avg_waiting_time}')

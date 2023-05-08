@@ -34,13 +34,11 @@ def fcfs_scheduling(file):
         return_time = end_time - processes[i][0]
         return_times.append(return_time)
 
-    # Calculate and print the average return time
+    # Calculate the average return time
     avg_return_time = round(sum(return_times) / len(processes), 1)
-    print(f'Average return time: {avg_return_time}')
 
-    # Calculate and print the average waiting time
+    # Calculate the average waiting time
     avg_waiting_time = round(sum(waiting_times) / len(processes), 1)
-    print(f'Average turnaround time: {avg_waiting_time}')
 
-    # Calculate and print the average waiting time
-    print(f'Average waiting time: {avg_waiting_time}')
+    # Print the output
+    print(f'FCFS {avg_return_time} {avg_waiting_time} {avg_waiting_time}')

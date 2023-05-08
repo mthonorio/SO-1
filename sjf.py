@@ -75,6 +75,4 @@ def sjf_scheduling(file):
     avg_waiting_time = round(total_waiting_time / n, 1)
 
     # Print the average waiting time and average turnaround time and average return time
-    print(f'Average turnaround time: {avg_waiting_time}')
-    print(f'Average return time: {avg_turnaround_time}')
-    print(f'Average waiting time: {avg_waiting_time}')
+    print(f'SJF {avg_turnaround_time} {avg_waiting_time} {avg_waiting_time}')

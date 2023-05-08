@@ -5,7 +5,7 @@ import operator
 
 def open_file(fileName):
     try:
-        with open(f'./tests/{fileName}', 'r') as f:
+        with open(f'./{fileName}', 'r') as f:
             lines = f.readlines()
             result = [
                 [
