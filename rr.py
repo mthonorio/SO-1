@@ -1,82 +1,119 @@
 import struct
-import timeit
 import operator
 from in_out import open_file, write_file
 
+
 def rr_scheduling(quantum, file):
     # Read the file and sort the processes by arrival time
-    data = open_file(file) 
-    data.sort(key=operator.itemgetter(0))
-    print(data)
+    processes = open_file(file)
+    original_processes = open_file(file)
 
-    n = len(data) # Number of processes
-    queue = [] # Initialize an empty queue
-    current_time = 0 # Initialize the current time to 0
-    completed_processes = [] # Initialize an empty list to keep track of completed processes
+    # Initialize the variables
+    n = len(processes)  # Number of processes
+    executed_process = []  # List to keep track of executed processes
+    current_time = 0  # Initialize the current time to 0
+    # Initialize an empty list to keep track of completed processes
+    completed_processes = []
+    start_time = []  # List to keep track of start time of each process
+    exit_time = []  # List to keep track of exit time of each process
+    ready_queue = []  # List to keep track of processes in the ready queue
+    response_time = [] * n  # List to keep track of response time of each process
 
-    begin_time = timeit.default_timer()
-    while len(completed_processes) < n: # Loop until all processes have completed execution
-        for i, process in enumerate(data):
-            # Check if a process has arrived and add it to the queue
-            if process[0] <= current_time and i not in [p[0] for p in queue] and i not in [p[0] for p in completed_processes]:
-                queue.append((i, process[0]))
+    for process in processes:
+        # Add the 0 in the end element of each process
+        process.append(0)
 
-        if not queue: # If the queue is empty, increment the current time and continue the loop
-            current_time += 1
-            continue
+    while 1:
+        normal_queue = []
+        temp = []
+        for i in range(n):
+            if processes[i][0] <= current_time and processes[i][2] == 0:
+                present = 0
+                if len(ready_queue) != 0:
+                    for k in range(len(ready_queue)):
+                        if processes[i][0] == ready_queue[k][0]:
+                            present = 1
+                # The above loop checks if the process is already present in the ready queue
+                if present == 0:
+                    temp.extend(processes[i])
+                    ready_queue.append(temp)
+                    temp = []
+                # The above loop adds the process to the ready queue if it is not already present in it
+                if len(ready_queue) != 0 and len(executed_process) != 0:
+                    for k in range(len(ready_queue)):
+                        if ready_queue[k][0] == executed_process[len(executed_process) - 1]:
+                            ready_queue.insert(
+                                (len(ready_queue) - 1), ready_queue.pop(k))
+                # The above loop makes sure that the recently executed process is appended at the end of ready queue
+            elif processes[i][2] == 0:
+                temp.extend(processes[i])
+                normal_queue.append(temp)
+                temp = []
+        if len(ready_queue) == 0 and len(normal_queue) == 0:
+            break
+        if len(ready_queue) != 0:
+            if ready_queue[0][1] > quantum:
+                start_time.append(current_time)
+                current_time += quantum
+                exit_time.append(current_time)
+                executed_process.append(ready_queue[0][0])
+                for j in range(len(processes)):
+                    if processes[j][0] == ready_queue[0][0]:
+                        break
+                processes[j][1] -= quantum
+                ready_queue.pop(0)
+            elif ready_queue[0][1] <= quantum:
+                start_time.append(current_time)
+                current_time += ready_queue[0][1]
+                exit_time.append(current_time)
+                executed_process.append(ready_queue[0][0])
+                for j in range(n):
+                    if processes[j][0] == ready_queue[0][0]:
+                        break
+                processes[j][1] = 0
+                processes[j][2] = 1
+                processes[j].append(current_time)
+                ready_queue.pop(0)
+            elif len(ready_queue) == 0:
+                if current_time < normal_queue[0][0]:
+                    current_time = normal_queue[0][0]
+                if normal_queue[0][1] > quantum:
+                    start_time.append(current_time)
+                    current_time += quantum
+                    exit_time.append(current_time)
+                    executed_process.append(normal_queue[0][0])
+                    for j in range(n):
+                        if processes[j][0] == normal_queue[0][0]:
+                            break
+                    processes[j][1] -= quantum
+                elif normal_queue[0][1] <= quantum:
+                    start_time.append(current_time)
+                    current_time += normal_queue[0][1]
+                    exit_time.append(current_time)
+                    executed_process.append(normal_queue[0][0])
+                    for j in range(n):
+                        if processes[j][0] == normal_queue[0][0]:
+                            break
+                    processes[j][1] = 0
+                    processes[j][2] = 1
+                    processes[j].append(current_time)
 
-        # Get the first process in the queue and execute it for the quantum
-        current_process = queue.pop(0)
-        process_idx = current_process[0]
-        process_time_left = current_process[1]
+    # Calculate average turnaround times
+    total_turnaround_time = 0
+    for i in range(n):
+        turnaround_time = processes[i][3] - processes[i][0]
+        total_turnaround_time += turnaround_time
+        processes[i].append(turnaround_time)
+    avg_turnaround_time = round(total_turnaround_time / n, 1)
 
-        if process_time_left > quantum:
-            current_time += quantum
-            process_time_left -= quantum
-            queue.append((process_idx, process_time_left)) # Add the process back to the queue if it hasn't completed execution
-        else:
-            current_time += process_time_left
-            completed_processes.append((process_idx, current_time)) # Add the process to the list of completed processes
+    # Calculate average waiting time
+    total_waiting_time = 0
+    for i in range(n):
+        waiting_time = processes[i][4] - original_processes[i][1]
+        total_waiting_time += waiting_time
+        processes[i].append(waiting_time)
+    avg_waiting_time = round(total_waiting_time / n, 1)
 
-    end_time = timeit.default_timer()
-
-    # Sort the list of completed processes by the order in which they were completed
-    completed_processes.sort(key=lambda x: x[1])
-    # Create a list of tuples representing the order in which the processes were executed
-    execution_order = [(process_idx, completion_time) for process_idx, completion_time in completed_processes]
-
-    print(f'RR algorithm time: {end_time - begin_time} seconds')
-    write_file(execution_order, file)
-
-    print("Gantt Chart:")
-    print("-----------")
-
-    # Print header row
-    for p in execution_order:
-        print(f"| P{p} ", end="")
-    print("|")
-
-    # Print separator
-    print("+", end="")
-    for i in range(len(execution_order)):
-        print("----+", end="")
-    print("")
-
-    # Print timeline
-    current_time = 0
-    for i, p in enumerate(execution_order):
-        # Print time interval
-        if i == 0:
-            print(f"0    {current_time + 1}    ", end="")
-        else:
-            print(f"{current_time}    {current_time + 1}    ", end="")
-        
-        # Print process ID
-        if i == len(execution_order) - 1:
-            print(f"P{p} |")
-        else:
-            print(f"P{p} ", end="")
-        
-        # Update current time
-        current_time += 1
-    return execution_order
+    # Print the output
+    print('Average turnaround time: ', avg_turnaround_time)
+    print('Average waiting time: ', avg_waiting_time)

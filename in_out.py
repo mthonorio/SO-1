@@ -14,7 +14,7 @@ def open_file(fileName):
                 for line in lines[0:]
             ]
 
-            result.sort(key=operator.itemgetter(0))
+            result.sort(key=lambda x: x[0])
             return result
     except:
         print('[Error]: File not found')
